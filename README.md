@@ -11,6 +11,8 @@ To set up your own JupyterHub IPython server on top of this using PAM authentica
 
 ```bash
 docker build -t tzaffi/jupyterhub .
+# the following could take a L O N G time. Consider setting up automated deploys.
+docker push tzaffi/jupyterhub
 ```
 
 
