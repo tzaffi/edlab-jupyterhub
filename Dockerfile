@@ -14,9 +14,16 @@ VOLUME /opt/shared_nbs
 ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 
 # Download the ipython-in-depth notebooks
-WORKDIR /opt/shared_nbs
+RUN mkdir /opt/shared_nbs/examples
+RUN mkdir /opt/shared_nbs/dashboard
+RUN chmod a+rwx /opt/shared_nbs/examples
+RUN chmod a+rwx /opt/shared_nbs/dashboard
+WORKDIR /opt/shared_nbs/examples
 RUN git clone https://github.com/ipython/ipython-in-depth.git
 #RUN chmod a+rwx /opt/shared_nbs/ipython-in-depth
+
+#back to the main work directory:
+WORKDIR /srv/jupyterhub/
 
 ADD users /tmp/users
 ADD add_user.sh /tmp/add_user.sh
