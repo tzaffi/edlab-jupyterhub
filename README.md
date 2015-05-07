@@ -17,5 +17,13 @@ docker build -t tzaffi/edlab-jupyterhub .
 docker push tzaffi/jupyterhub
 ```
 
+To build and run the docker:
+```bash
+git clone https://github.com/tzaffi/edlab-jupyterhub.git
+cd edlab-jupyterhub
+docker build -t tzaffi/edlab-jupyterhub .
+sudo docker run -it -p 80:80 -v $(pwd):/opt/shared_nbs tzaffi/edlab-jupyterhub ipython notebook --ip=0.0.0.0 --no-browser
+```
+
 
 
