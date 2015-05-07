@@ -13,6 +13,11 @@ VOLUME /opt/shared_nbs
 # If you have your own custom jupyterhub config, overwrite it.
 ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 
+# Download the ipython-in-depth notebooks
+WORKDIR /opt/shared_nbs
+RUN git clone https://github.com/ipython/ipython-in-depth.git
+RUN chmod a+rwx /opt/shared_nbs/ipython-in-depth
+
 ADD users /tmp/users
 ADD add_user.sh /tmp/add_user.sh
 RUN bash /tmp/add_user.sh /tmp/users
