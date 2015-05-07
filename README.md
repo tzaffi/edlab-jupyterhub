@@ -10,11 +10,10 @@ Dockerhub: https://registry.hub.docker.com/u/tzaffi/jupyterhub/
 (Wiecki's original DockerHub: https://registry.hub.docker.com/u/twiecki/pydata-docker-jupyterhub/)
 
 This differs from Wiecki's original repo in that:
-* Users (alice, bob and cassandra) are created in the Dockerfile as [users](./users) have been prepulated
-and the [add_user.sh](./add_user.sh) script is called
+
+* Users (alice, bob and cassandra) are created in the Dockerfile as [users](./users) have been prepopulated and the [add_user.sh](./add_user.sh) script is called
 * Note that the file called `users` has a line for every user that looks like this `<user>,<password>`
-* Users should change their passwords the first time they log in by opening a terminal window through their jupyter 
-instance and running the `passwd` command. They will require a rather stringent password with a variety of character types.
+* Users should change their passwords the first time they log in by opening a terminal window through their jupyter  instance and running the `passwd` command. They will require a rather stringent password with a variety of character types.
 * Users can share notebooks by saving into `~/shared_nbs/`
 
 ```bash
@@ -25,12 +24,10 @@ docker push tzaffi/jupyterhub
 ```
 
 To build and run the docker:
+
 ```bash
 git clone https://github.com/tzaffi/edlab-jupyterhub.git
 cd edlab-jupyterhub
 docker build -t tzaffi/edlab-jupyterhub .
 sudo docker run -it -p 80:80 -v $(pwd):/opt/shared_nbs tzaffi/edlab-jupyterhub ipython notebook --ip=0.0.0.0 --no-browser
 ```
-
-
-
