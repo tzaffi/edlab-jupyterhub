@@ -1,8 +1,9 @@
 Docker container with a PyData stack and JupyterHub server and sample users
 ===========================================================================
 
-PyData multi-user IPython/Jupyter notebook server docker container using JupyterHub and conda.
+This is a fork of [Thomas Wiecki's JupyterHub repo](https://github.com/twiecki/pydata_docker_jupyterhub)
 
+PyData multi-user IPython/Jupyter notebook server docker container using JupyterHub and conda.
 
 Dockerhub: https://registry.hub.docker.com/u/tzaffi/jupyterhub/)
 
