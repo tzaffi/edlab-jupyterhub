@@ -11,10 +11,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxr
 #    bash Miniconda-latest-Linux-x86_64.sh -b -p /opt/miniconda && \
 #    rm Miniconda-latest-Linux-x86_64.sh
 
-# For python 3 (notice the only difference is the Continuum URL:
+# For python 3 (notice the only difference is the Continuum URL and filename):
 RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda-latest-Linux-x86_64.sh -b -p /opt/miniconda && \
-    rm Miniconda-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda && \
+    rm Miniconda3-latest-Linux-x86_64.sh
     
 # For either python 2 or 3
 ENV PATH /opt/miniconda/bin:$PATH
