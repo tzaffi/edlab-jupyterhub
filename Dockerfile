@@ -10,7 +10,29 @@ MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 #minimal install:
-RUN apt-get update && apt-get install -y git vim wget build-essential python-dev ca-certificates bzip2 && apt-get clean
+RUN apt-get update && apt-get install -y -q \
+    git \
+    vim \
+    wget \
+    build-essential \
+    python-dev \
+    ca-certificates \
+    bzip2 \ 
+    libzmq3-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    pandoc \
+    libcurl4-openssl-dev \
+    nodejs \
+    nodejs-legacy \
+    npm \
+    && apt-get clean
+
+# ??????? BEGIN DO WE NEED ????????
+# In order to build from source, need less
+RUN npm install -g 'less@<3.0'
+#RUN pip install invoke
+# ??????? END DO WE NEED ????????
 
 #full install:
 # Julia dependencies
@@ -56,6 +78,9 @@ RUN julia -e 'Pkg.add("Gadfly")' && julia -e 'Pkg.add("RDatasets")'
 
 # Extra Kernels
 RUN pip install --user bash_kernel
+
+# ipython needs maybe ????????
+RUN pip install invoke
 
 # Install PyData modules and IPython dependencies
 #RUN conda update --quiet --yes conda && \
@@ -103,8 +128,9 @@ RUN find . -name '*.ipynb' -exec ipython trust {} \;
 WORKDIR /tmp/
 # Test python
 RUN python -c "import numpy, scipy, pandas, matplotlib, matplotlib.pyplot, sklearn, seaborn, statsmodels, theano"
-RUN iptest2
-RUN iptest3
+#RUN iptest
+#RUN iptest2
+#RUN iptest3
 # Test ipython
 
 ##########NOW INSTALL JUPYTERHUB
