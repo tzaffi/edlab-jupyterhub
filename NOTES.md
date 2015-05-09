@@ -30,3 +30,11 @@ curl localhost
 Stop with the command (note the CONTAINER ID you get back from docker ps):
 
 sudo docker stop <CONTAINER ID>
+
+
+If you get a "no space left on device" message while building try running:
+
+# Dangling images:
+sudo docker rmi -f $(docker images -f dangling=true -q)  
+# Stopped images:
+docker rm $(docker ps -qa)
