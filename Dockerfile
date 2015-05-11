@@ -2,8 +2,8 @@
 ### Thomas Wiecki's container. cf. https://github.com/twiecki/pydata_docker_jupyterhub
 ### and jupyter's demo container. https://github.com/jupyter/docker-demo-images 
 
-FROM debian:jessie
-#FROM ubuntu:14.04
+#FROM debian:jessie
+FROM ubuntu:14.04
 
 MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 
@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y -q \
     python-dev \
     ca-certificates \
     bzip2 \ 
+    python-pip \
+    python3-dev \
+    python3-pip \
+    python-sphinx \
+    python3-sphinx \
     libzmq3-dev \
     sqlite3 \
     libsqlite3-dev \
@@ -142,12 +147,14 @@ RUN mkdir -p /srv/
 
 # install jupyterhub
 ADD requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /srv/
 ADD . /srv/jupyterhub
 WORKDIR /srv/jupyterhub/
 
+#EXPERIMENT FROM IPYTHON:
+RUN pip3 install file:///srv/ipython#egg=ipython[all]
 RUN pip3 install .
 WORKDIR /srv/jupyterhub/
 

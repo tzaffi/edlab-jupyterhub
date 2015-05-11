@@ -35,6 +35,6 @@ sudo docker stop <CONTAINER ID>
 If you get a "no space left on device" message while building try running:
 
 # Dangling images:
-sudo docker rmi -f $(docker images -f dangling=true -q)  
+docker rmi -f $(docker images -f dangling=true -q)  
 # Stopped images:
 docker rm $(docker ps -qa)
