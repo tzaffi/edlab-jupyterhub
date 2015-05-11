@@ -140,25 +140,35 @@ RUN python -c "import numpy, scipy, pandas, matplotlib, matplotlib.pyplot, sklea
 
 ##########NOW INSTALL JUPYTERHUB
 
+RUN mkdir -p /srv/
+
+#### STEP 1. Install ipython for Jupyterhub:
+
+RUN npm install -g 'less@<3.0'
+RUN pip install invoke
+WORKDIR /srv/
+RUN git clone --depth 1 https://github.com/ipython/ipython ipython/
+WORKDIR /srv/ipython
+RUN chmod -R +rX /srv/ipython
+RUN pip install file:///srv/ipython#egg=ipython[all]
+RUN python -m IPython kernelspec install-self
+
+#### STEP 2. Install Jupyterhub:
+
 # install js dependencies
 RUN npm install -g configurable-http-proxy
-
-RUN mkdir -p /srv/
 
 # install jupyterhub
 ADD requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /srv/
-ADD . /srv/jupyterhub
-WORKDIR /srv/jupyterhub/
+RUN git clone --depth 1 https://github.com/jupyter/jupyterhub jupyterhub/
+WORKDIR /srv/jupyterhub
+RUN pip install .
+WORKDIR /srv/jupyterhub
 
-#EXPERIMENT FROM IPYTHON:
-RUN pip3 install file:///srv/ipython#egg=ipython[all]
-RUN pip3 install .
-WORKDIR /srv/jupyterhub/
-
-#create filesystem users, inherited by Jupyterhub
+#### Create PAM filesystem users, inherited by Jupyterhub server
 ADD users /tmp/users
 ADD add_user.sh /tmp/add_user.sh
 RUN bash /tmp/add_user.sh /tmp/users
