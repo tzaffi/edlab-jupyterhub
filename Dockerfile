@@ -1,98 +1,24 @@
-# A merge of:
-### Thomas Wiecki's container. cf. https://github.com/twiecki/pydata_docker_jupyterhub
-### and jupyter's demo container. https://github.com/jupyter/docker-demo-images 
-
-#FROM debian:jessie
-FROM ubuntu:14.04
+########### BEGIN MODDED  twiecki/pydata-docker-jupyterhub
+FROM jupyter/jupyterhub
 
 MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 
-ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1
+#HERE I SHALL RUN MY apt-get etc.
 
-#minimal install:
-RUN apt-get update && apt-get install -y -q \
-    git \
-    vim \
-    wget \
-    build-essential \
-    python-dev \
-    ca-certificates \
-    bzip2 \ 
-    python-pip \
-    python3-dev \
-    python3-pip \
-    python-sphinx \
-    python3-sphinx \
-    libzmq3-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    pandoc \
-    libcurl4-openssl-dev \
-    nodejs \
-    nodejs-legacy \
-    npm \
-    && apt-get clean
-
-# ??????? BEGIN DO WE NEED ????????
-# In order to build from source, need less
-RUN npm install -g 'less@<3.0'
-#RUN pip install invoke
-# ??????? END DO WE NEED ????????
-
-#full install:
-# Julia dependencies
-RUN apt-get install -y julia libnettle4 && apt-get clean
-
-# R dependencies that conda can't provide (X, fonts)
-RUN apt-get install -y libxrender1 fonts-dejavu && apt-get clean
-
-# Some more useful installs:
-RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libfontconfig1
-
-
-ENV CONDA_DIR /opt/conda
-
-# Install conda for the system:
-RUN echo 'export PATH=$CONDA_DIR/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh && \
-    /bin/bash /Miniconda3-3.9.1-Linux-x86_64.sh -b -p $CONDA_DIR && \
-    rm Miniconda3-3.9.1-Linux-x86_64.sh && \
-    $CONDA_DIR/bin/conda install --yes conda==3.10.1
-
-ENV HOME /root
-ENV SHELL /bin/bash
-ENV USER root
-ENV PATH $CONDA_DIR/bin:$PATH
-WORKDIR $HOME
-
-#minimal install:
-RUN conda install --yes ipython-notebook terminado && conda clean -yt
-
-#full install:
-
-# Python packages
-RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh pyzmq six theano tornado jinja2 sphinx pygments nose readline sqlalchemy && conda clean -yt
-
-# R packages
-RUN conda config --add channels r
-RUN conda install --yes r-irkernel r-plyr r-devtools r-rcurl r-dplyr r-ggplot2 r-caret && conda clean -yt
-
-# IJulia and Julia packages
-RUN julia -e 'Pkg.add("IJulia")'
-RUN julia -e 'Pkg.add("Gadfly")' && julia -e 'Pkg.add("RDatasets")'
-
-# Extra Kernels
-RUN pip install --user bash_kernel
-
-# ipython needs maybe ????????
-RUN pip install invoke
+# Here I shall install jupyter/demo
+# Install miniconda
+#RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && \
+#    bash Miniconda-latest-Linux-x86_64.sh -b -p /opt/miniconda && \
+#    rm Miniconda-latest-Linux-x86_64.sh
+#ENV PATH /opt/miniconda/bin:$PATH
+#RUN chmod -R a+rx /opt/miniconda
 
 # Install PyData modules and IPython dependencies
 #RUN conda update --quiet --yes conda && \
-#    conda install --quiet --yes numpy scipy pandas matplotlib cython pyzmq scikit-learn seaborn six \
-#    	  	  	  	statsmodels theano pip tornado jinja2 sphinx pygments nose readline sqlalchemy
+#    conda install --quiet --yes numpy scipy pandas matplotlib cython pyzmq scikit-learn seaborn six statsmodels theano pip tornado jinja2 sphinx pygments nose readline sqlalchemy
 
-# Set up IPython kernel 
+# Set up IPython kernel
 #RUN pip install file:///srv/ipython && \
 #    rm -rf /usr/local/share/jupyter/kernels/* && \
 #    python2 -m IPython kernelspec install-self
@@ -101,17 +27,58 @@ RUN pip install invoke
 #RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 #RUN conda clean -y -t
 
-#########
+# Test
+#RUN python -c "import numpy, scipy, pandas, matplotlib, matplotlib.pyplot, sklearn, seaborn, statsmodels, theano"
+########### END MODDED  twiecki/pydata-docker-jupyterhub
 
-#Config files:
+
+
+########### BEGIN MODDED jupyter/docker-demo-images/common (aka Docker jupyter/minimal)
+#ENV DEBIAN_FRONTEND noninteractive
+ENV SHELL /bin/bash
+ENV CONDA_DIR /opt/conda
+RUN echo "CONDA_DIR = $CONDA_DIR"
+RUN echo "export PATH=$CONDA_DIR/bin:$PATH" > /etc/profile.d/conda.sh 
+RUN grep . /etc/profile.d/conda.sh 
+
+RUN /bin/bash -c "wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh"
+#RUN pwd
+#RUN ls
+#RUN /bin/bash -c "echo $CONDA_DIR"
+RUN chmod 777 Miniconda3-3.9.1-Linux-x86_64.sh
+RUN  ./Miniconda3-3.9.1-Linux-x86_64.sh -b -p $CONDA_DIR
+RUN rm Miniconda3-3.9.1-Linux-x86_64.sh 
+RUN chmod a+rwx $CONDA_DIR
+
+#RUN $CONDA_DIR/bin/conda install --yes conda==3.10.1
+#RUN $CONDA_DR/bin/conda install --yes ipython-notebook terminado && conda clean -yt
+
+ENV HOME /root
+ENV PATH $CONDA_DIR/bin:$PATH
+WORKDIR $HOME
+
+RUN conda install --yes conda==3.10.1
+RUN conda install --yes ipython-notebook terminado && conda clean -yt
 RUN ipython profile create
-ADD ipython_notebook_config.py /root/.ipython/profile_default/ipython_notebook_config.py 
+
+#EXPOSE 8888
+#CMD ipython notebook
+########### END MODDED jupyter/docker-demo-images/common (aka Docker jupyter/minimal)
+
+########### BEGIN MODDED jupyter/docker-demo-images (aka Docker jupyter/demo)
+RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh && conda clean -yt
+RUN pip install --user bash_kernel
+
+########### END MODDED jupyter/docker-demo-images (aka Docker jupyter/demo)
+
+
+
+
+#FROM twiecki/pydata-docker-jupyterhub
 
 # Set up shared folder
 RUN mkdir /opt/shared_nbs
 RUN chmod a+rwx /opt/shared_nbs
-# If you have your own custom jupyterhub config, overwrite it.
-ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 
 # Create directories for shared notebooks - examples and dashboard
 RUN mkdir /opt/shared_nbs/examples
@@ -126,58 +93,14 @@ RUN git clone https://github.com/jvns/pandas-cookbook.git
 RUN git clone --depth 1 https://github.com/ipython-books/cookbook-code ipython-cookbook/
 ADD notebooks/ /opt/shared_nbs/examples/
 
-# Convert notebooks to the current format
-RUN find . -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
-RUN find . -name '*.ipynb' -exec ipython trust {} \;
+# Convert notebooks to the current format and authorize them
+#RUN find . -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
+#RUN find . -name '*.ipynb' -exec ipython trust {} \;
 
-WORKDIR /tmp/
-# Test python
-RUN python -c "import numpy, scipy, pandas, matplotlib, matplotlib.pyplot, sklearn, seaborn, statsmodels, theano"
-#RUN iptest
-#RUN iptest2
-#RUN iptest3
-# Test ipython
-
-##########NOW INSTALL JUPYTERHUB
-
-RUN mkdir -p /srv/
-
-#### STEP 1. Install ipython for Jupyterhub:
-
-RUN npm install -g 'less@<3.0'
-RUN pip install invoke
-WORKDIR /srv/
-RUN git clone --depth 1 https://github.com/ipython/ipython ipython/
-WORKDIR /srv/ipython
-RUN chmod -R +rX /srv/ipython
-RUN pip install file:///srv/ipython#egg=ipython[all]
-RUN python -m IPython kernelspec install-self
-
-#### STEP 2. Install Jupyterhub:
-
-# install js dependencies
-RUN npm install -g configurable-http-proxy
-
-# install jupyterhub
-ADD requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-
-WORKDIR /srv/
-RUN git clone --depth 1 https://github.com/jupyter/jupyterhub jupyterhub/
-WORKDIR /srv/jupyterhub
-RUN pip install .
-WORKDIR /srv/jupyterhub
-
-#### Create PAM filesystem users, inherited by Jupyterhub server
 ADD users /tmp/users
 ADD add_user.sh /tmp/add_user.sh
 RUN bash /tmp/add_user.sh /tmp/users
 RUN rm /tmp/add_user.sh /tmp/users
 
-# Mark a subdirectory of shared folder into volume for sharing data outside the container
+# Mark a subdirector of shared folder into volume for sharing data outside the container
 VOLUME /opt/shared_nbs/EXTERNAL
-
-EXPOSE 8888
-ONBUILD ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
-CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
-

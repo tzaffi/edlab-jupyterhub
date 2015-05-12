@@ -16,6 +16,10 @@ Run with the command:
 
 sudo docker run -p 80:80 -d nginx-test
 
+Run and mount to ~/docker/mounts/mount5 VM path /path/on/vm with the command:
+
+sudo docker run -p 80:80 -v ~/socker/mounts/mount5:/path/on/vm -d nginx-test
+
 
 See its CONTAINER ID with the command:
 
