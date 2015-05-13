@@ -1,6 +1,0 @@
-ipython>=3
-tornado>=4
-jinja2
-simplepam
-sqlalchemy
-requests

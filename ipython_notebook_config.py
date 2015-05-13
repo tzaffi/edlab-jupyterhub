@@ -13,6 +13,12 @@ c.NotebookApp.port = 8888
 # SSL
 c.NotebookApp.trust_xheaders = True
 
+
+# Make sure the right version of python is loaded by ipython notebooks
+c.LocalControllerLauncher.controller_cmd = ['/opt/conda/bin/python', '-m', 'IPython.parallel.controller']
+c.LocalEngineLauncher.engine_cmd = ['/opt/conda/bin/python', '-m', 'IPython.parallel.engine']
+c.LocalEngineSetLauncher.engine_cmd = ['/opt/conda/bin/python', '-m', 'IPython.parallel.engine']
+
 # Include our extra templates
 #c.NotebookApp.extra_template_paths = ['/srv/templates/']
 

@@ -148,7 +148,7 @@ c = get_config()
 # c.Spawner.cmd = ['jupyterhub-singleuser']
 
 # Whitelist of environment variables for the subprocess to inherit
-# c.Spawner.env_keep = ['PATH', 'PYTHONPATH', 'CONDA_ROOT', 'CONDA_DEFAULT_ENV', 'VIRTUAL_ENV', 'LANG', 'LC_ALL']
+c.Spawner.env_keep = ['PATH', 'PYTHONPATH', 'CONDA_ROOT', 'CONDA_DEFAULT_ENV', 'VIRTUAL_ENV', 'LANG', 'LC_ALL']
 
 # Enable debug-logging of the single-user server
 # c.Spawner.debug = False

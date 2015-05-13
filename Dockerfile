@@ -1,9 +1,93 @@
-########### BEGIN MODDED  twiecki/pydata-docker-jupyterhub
-FROM jupyter/jupyterhub
+#########TODO
+#FROM GITTER:
+#If you did 
+#/opt/conda/bin/python -m pip install jupyterhub
+#, it ought to be hooked up to the right Python.
+#tzaffi 5 minutes ago  
+#That makes sense!!!
+#I will try that again tonight
+#THANKS SO MUCH!
+#minrk 5 minutes ago  
+#You can tell JupyterHub to use a different Python for the server and/or kernels via configuration, but it's easiest if they are all the same unless you have a reason to keep them separate.
+#tzaffi 4 minutes ago  
+#No... I definitely want consistency and configuration has been really tough
+#much better to have default config's just worki
+#instead of adding unnecessary layers!!!
+#thanks again!!!
 
+#THEREFORE: LOOK AT JUPYTERHUB INSTALL. REDO IT TO SO THAT INSTALL CONDA
+#INSTEAD OF STANDARD PYTHON
+#AND HAVE IT INSTALL JUPYTERHUB WITH:
+#/opt/conda/bin/python -m pip install jupyterhub
+
+########### BEGIN MODDED jupyter/jupyterhub
+FROM ipython/ipython
+
+#MAINTAINER Jupyter Project <jupyter@googlegroups.com>
 MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1
+
+# install js dependencies
+RUN npm install -g configurable-http-proxy
+
+RUN mkdir -p /srv/
+
+######################### BEGIN INSTALL CONDA PYTHON:
+ENV SHELL /bin/bash
+ENV CONDA_DIR /opt/conda
+RUN echo "CONDA_DIR = $CONDA_DIR"
+RUN echo "export PATH=$CONDA_DIR/bin:$PATH" > /etc/profile.d/conda.sh 
+RUN cat /etc/profile.d/conda.sh 
+
+RUN /bin/bash -c "wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh"
+RUN pwd
+RUN ls
+RUN /bin/bash -c "echo $CONDA_DIR"
+RUN chmod 777 Miniconda3-3.9.1-Linux-x86_64.sh
+RUN ./Miniconda3-3.9.1-Linux-x86_64.sh -b -p $CONDA_DIR
+RUN rm Miniconda3-3.9.1-Linux-x86_64.sh 
+RUN chmod a+rwx $CONDA_DIR
+
+ENV HOME /root
+ENV PATH $CONDA_DIR/bin:$PATH
+WORKDIR $HOME
+
+RUN conda install --yes conda==3.10.1
+RUN conda install --yes ipython-notebook terminado && conda clean -yt
+RUN ipython profile create
+
+RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh && conda clean -yt
+RUN pip install --user bash_kernel
+
+######################## END INSTALL CONDA PYTHON
+# install jupyterhub
+WORKDIR /srv/
+RUN git clone --depth 1 https://github.com/jupyter/jupyterhub jupyterhub/
+WORKDIR /srv/jupyterhub/
+RUN cp requirements.txt /tmp/requirements.txt
+RUN /opt/conda/bin/python -m pip install -r /tmp/requirements.txt
+RUN /opt/conda/bin/python -m pip install .
+
+# Derivative containers should add jupyterhub config,
+# which will be used when starting the application.
+
+EXPOSE 8000
+
+ONBUILD ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
+
+########### END MODDED jupyter/jupyterhub
+
+########### BEGIN MODDED  twiecki/pydata-docker-jupyterhub
+######## I'VE COMMENTED OUT ALL OF twiecki's Dockerfile 
+######## EXCEPT FOR: 
+##  1) adding users (as in his README.md)
+#FROM jupyter/jupyterhub
+
+#MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
+
+#RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1
 #HERE I SHALL RUN MY apt-get etc.
 
 # Here I shall install jupyter/demo
@@ -35,31 +119,33 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxr
 
 ########### BEGIN MODDED jupyter/docker-demo-images/common (aka Docker jupyter/minimal)
 #ENV DEBIAN_FRONTEND noninteractive
-ENV SHELL /bin/bash
-ENV CONDA_DIR /opt/conda
-RUN echo "CONDA_DIR = $CONDA_DIR"
-RUN echo "export PATH=$CONDA_DIR/bin:$PATH" > /etc/profile.d/conda.sh 
-RUN grep . /etc/profile.d/conda.sh 
 
-RUN /bin/bash -c "wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh"
+#MOVING THESE TO THE TOP:
+#ENV SHELL /bin/bash
+#ENV CONDA_DIR /opt/conda
+#RUN echo "CONDA_DIR = $CONDA_DIR"
+#RUN echo "export PATH=$CONDA_DIR/bin:$PATH" > /etc/profile.d/conda.sh 
+#RUN grep . /etc/profile.d/conda.sh 
+
+#RUN /bin/bash -c "wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh"
 #RUN pwd
 #RUN ls
 #RUN /bin/bash -c "echo $CONDA_DIR"
-RUN chmod 777 Miniconda3-3.9.1-Linux-x86_64.sh
-RUN  ./Miniconda3-3.9.1-Linux-x86_64.sh -b -p $CONDA_DIR
-RUN rm Miniconda3-3.9.1-Linux-x86_64.sh 
-RUN chmod a+rwx $CONDA_DIR
+#RUN chmod 777 Miniconda3-3.9.1-Linux-x86_64.sh
+#RUN  ./Miniconda3-3.9.1-Linux-x86_64.sh -b -p $CONDA_DIR
+#RUN rm Miniconda3-3.9.1-Linux-x86_64.sh 
+#RUN chmod a+rwx $CONDA_DIR
 
 #RUN $CONDA_DIR/bin/conda install --yes conda==3.10.1
 #RUN $CONDA_DR/bin/conda install --yes ipython-notebook terminado && conda clean -yt
 
-ENV HOME /root
-ENV PATH $CONDA_DIR/bin:$PATH
-WORKDIR $HOME
+#ENV HOME /root
+#ENV PATH $CONDA_DIR/bin:$PATH
+#WORKDIR $HOME
 
-RUN conda install --yes conda==3.10.1
-RUN conda install --yes ipython-notebook terminado && conda clean -yt
-RUN ipython profile create
+#RUN conda install --yes conda==3.10.1
+#RUN conda install --yes ipython-notebook terminado && conda clean -yt
+#RUN ipython profile create
 
 #EXPOSE 8888
 #CMD ipython notebook
@@ -71,8 +157,12 @@ RUN pip install --user bash_kernel
 
 ########### END MODDED jupyter/docker-demo-images (aka Docker jupyter/demo)
 
-
-
+####### CONFIGURE iPython Notebooks:
+# from this discussion: https://github.com/jupyter/jupyterhub/issues/153
+RUN mkdir /etc/ipython
+#ADD ipython_notebook_config.py /etc/ipython/ipython_notebook_config.py
+#RUN chmod a+rwx /etc/ipython
+ADD kernels/ /usr/local/share/jupyter/kernels/
 
 #FROM twiecki/pydata-docker-jupyterhub
 
@@ -104,3 +194,4 @@ RUN rm /tmp/add_user.sh /tmp/users
 
 # Mark a subdirector of shared folder into volume for sharing data outside the container
 VOLUME /opt/shared_nbs/EXTERNAL
+
