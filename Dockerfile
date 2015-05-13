@@ -34,7 +34,7 @@ RUN conda install --yes conda==3.10.1
 RUN conda install --yes ipython-notebook terminado && conda clean -yt
 RUN ipython profile create
 
-RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh pyzmq theano sphinx node && conda clean -yt
+RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh pyzmq theano sphinx && conda clean -yt
 
 # TWIECKI runs:
 #    conda install --quiet --yes numpy scipy pandas matplotlib cython pyzmq scikit-learn seaborn six statsmodels theano pip tornado jinja2 sphinx pygments nose readline sqlalchemy
