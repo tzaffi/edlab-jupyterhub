@@ -1,31 +1,8 @@
-#########TODO
-#FROM GITTER:
-#If you did 
-#/opt/conda/bin/python -m pip install jupyterhub
-#, it ought to be hooked up to the right Python.
-#tzaffi 5 minutes ago  
-#That makes sense!!!
-#I will try that again tonight
-#THANKS SO MUCH!
-#minrk 5 minutes ago  
-#You can tell JupyterHub to use a different Python for the server and/or kernels via configuration, but it's easiest if they are all the same unless you have a reason to keep them separate.
-#tzaffi 4 minutes ago  
-#No... I definitely want consistency and configuration has been really tough
-#much better to have default config's just worki
-#instead of adding unnecessary layers!!!
-#thanks again!!!
-
-#THEREFORE: LOOK AT JUPYTERHUB INSTALL. REDO IT TO SO THAT INSTALL CONDA
-#INSTEAD OF STANDARD PYTHON
-#AND HAVE IT INSTALL JUPYTERHUB WITH:
-#/opt/conda/bin/python -m pip install jupyterhub
-
 ########### BEGIN MODDED jupyter/jupyterhub
 FROM ipython/ipython
-
-#MAINTAINER Jupyter Project <jupyter@googlegroups.com>
 MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 
+# install jupyterhub compilation dependencies
 RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1
 
 # install js dependencies
@@ -57,7 +34,14 @@ RUN conda install --yes conda==3.10.1
 RUN conda install --yes ipython-notebook terminado && conda clean -yt
 RUN ipython profile create
 
-RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh && conda clean -yt
+RUN conda install --yes numpy pandas scikit-learn matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle numba bokeh pyzmq theano sphinx node \
+    && conda clean -yt
+
+# TWIECKI runs:
+#    conda install --quiet --yes numpy scipy pandas matplotlib cython pyzmq scikit-learn seaborn six statsmodels theano pip tornado jinja2 sphinx pygments nose readline sqlalchemy
+# Do we need:  pyzmq? six? theano? pip? tornado? jinja2? sphinx? pygments? node? readline? sqlalchemy?
+# We need:  pyzmq theano sphinx node 
+
 RUN pip install --user bash_kernel
 
 ######################## END INSTALL CONDA PYTHON
@@ -100,7 +84,7 @@ CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 
 # Install PyData modules and IPython dependencies
 #RUN conda update --quiet --yes conda && \
-#    conda install --quiet --yes numpy scipy pandas matplotlib cython pyzmq scikit-learn seaborn six statsmodels theano pip tornado jinja2 sphinx pygments nose readline sqlalchemy
+
 
 # Set up IPython kernel
 #RUN pip install file:///srv/ipython && \
