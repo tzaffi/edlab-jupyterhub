@@ -70,11 +70,6 @@ MAINTAINER Zeph Grunschlag <zgrunschlag@gmail.com>
 
 # install jupyterhub compilation dependencies
 RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1 
-#RUN apt-get update && apt-get upgrade -y && apt-get install -y wget libsm6 libxrender1 libfontconfig1 node npm git build-essential emacs ca-certificates bzip2 && apt-get clean
-#??????????? apt-get install libzmq3-dev libcurl4-openssl-dev
-
-# do we need this from the minimal demo image?
-#RUN apt-get update && apt-get install -y git vim wget build-essential python-dev ca-certificates bzip2 && apt-get clean
 
 # install js dependencies
 RUN npm install -g configurable-http-proxy
@@ -132,9 +127,10 @@ CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 ########### BEGIN INSTALL MORE LANGUAGES
 # BIG demo from docker-demo-images/Dockerfile
 
-###########HMMM DO WE NEED THIS??????????
+#NOT SURE IF WE NEED:
 RUN apt-get update && apt-get install -y git vim wget build-essential python-dev ca-certificates bzip2 && apt-get clean
 
+###############  JULIA IS CURRENTLY  NOT WORKING. PROBLEM WITH zmq.  TRY AGAIN LATER #############
 # Julia dependencies
 #RUN apt-get install -y julia libnettle4 && apt-get clean
 
@@ -181,8 +177,8 @@ RUN git clone --depth 1 https://github.com/ipython-books/cookbook-code ipython-c
 ADD notebooks/ /opt/shared_nbs/examples/
 
 # Convert notebooks to the current format and authorize them
-#RUN find . -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
-#RUN find . -name '*.ipynb' -exec ipython trust {} \;
+RUN find . -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
+RUN find . -name '*.ipynb' -exec ipython trust {} \;
 
 ADD users /tmp/users
 ADD add_user.sh /tmp/add_user.sh

@@ -1,0 +1,11 @@
+{ 
+  "display_name": "Python 3",
+  "language": "python",
+  "argv": [
+  	  "/opt/conda/bin/python",
+	  "-m",
+	  "IPython.kernel",
+	  "-f",
+	  "{connection_file}"
+	  ]
+}
