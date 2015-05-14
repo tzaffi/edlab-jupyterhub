@@ -42,3 +42,12 @@ If you get a "no space left on device" message while building try running:
 docker rmi -f $(docker images -f dangling=true -q)  
 # Stopped images:
 docker rm $(docker ps -qa)
+
+# docker not connecting to boot2docker's VM?
+boot2docker start
+$(boot2docker shellinit)
+
+# connect to localhost from inside docker container (assuming default bridge mode)
+# using ip 10.0.2.2
+# EG, to verify connection to local MySQL db run inside the container:
+telnet 10.0.2.2 3306                             ^^^^^^
