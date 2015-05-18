@@ -1,13 +1,15 @@
 Docker container with a PyData stack and JupyterHub server and sample users
 ===========================================================================
 
-This is a fork of [Thomas Wiecki's JupyterHub repo](https://github.com/twiecki/pydata_docker_jupyterhub).
 
 PyData multi-user IPython/Jupyter notebook server docker container using JupyterHub and conda.
 
 Dockerhub: https://registry.hub.docker.com/u/tzaffi/jupyterhub/
 
-(Wiecki's original DockerHub: https://registry.hub.docker.com/u/twiecki/pydata-docker-jupyterhub/)
+This repository is inspired by the following projects:
+* [Jupyter's full demo image](https://github.com/jupyter/docker-demo-images)
+* [Jupyter's JupyterHub](https://github.com/jupyter/jupyterhub)
+* [Thomas Wiecki's JupyterHub extebsion repo](https://github.com/twiecki/pydata_docker_jupyterhub)
 
 This differs from Wiecki's original repo in that:
 
@@ -15,6 +17,7 @@ This differs from Wiecki's original repo in that:
 * Note that the file called `users` has a line for every user that looks like this `<user>,<password>`
 * Users should change their passwords the first time they log in by opening a terminal window through their jupyter  instance and running the `passwd` command. They will require a rather stringent password with a variety of character types.
 * Users can share notebooks by saving into `~/shared_nbs/`
+* An external volume is available for mounting via `~/shared_nbs/EXTERNAL`
 
 ```bash
 # replace tzaffi/edlab-jupyterhub with your own docker repo:
