@@ -185,5 +185,5 @@ ADD add_user.sh /tmp/add_user.sh
 RUN bash /tmp/add_user.sh /tmp/users
 RUN rm /tmp/add_user.sh /tmp/users
 
-# Mark a subdirector of shared folder into volume for sharing data outside the container
+# Mark a subdirectory of shared folder into volume for sharing data outside the container
 VOLUME /opt/shared_nbs/EXTERNAL
