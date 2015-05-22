@@ -13,8 +13,18 @@ This repository is inspired by the following projects:
 
 This differs from Wiecki's original repo in that:
 
-* Users (alice, bob and cassandra) are created in the Dockerfile as [users](./users) have been prepopulated and the [add_user.sh](./add_user.sh) script is called
+* Users (alice, bob and cassandra) are created in the container as [users](./users) have 
+been prepopulated and the [add_or_remove_user.sh](./add_or_remove_user.sh) script is called
+* Users are deleted from the container if their line starts with a dash
+* If you inherit from this docker container, 
+to delete `alice`, `bob` and `cassandra`, prepend the `users` with
+```
+-alice
+-bob
+-cassandra
+```
 * Note that the file called `users` has a line for every user that looks like this `<user>,<password>`
+* Note also that final line should be blank (don't have the EOF on the last user line)
 * Users should change their passwords the first time they log in by opening a terminal window through their jupyter  instance and running the `passwd` command. They will require a rather stringent password with a variety of character types.
 * Users can share notebooks by saving into `~/shared_nbs/`
 * An external volume is available for mounting via `~/shared_nbs/EXTERNAL`

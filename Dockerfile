@@ -48,13 +48,6 @@ RUN cp requirements.txt /tmp/requirements.txt
 RUN /opt/conda/bin/python -m pip install -r /tmp/requirements.txt
 RUN /opt/conda/bin/python -m pip install .
 
-EXPOSE 8000
-
-# Derivative containers should add jupyterhub config,
-# which will be used when starting the application.
-ONBUILD ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
-CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
-
 ######################## END INSTALL JUPYTERHUB
 
 ########### BEGIN INSTALL MORE LANGUAGES
@@ -113,10 +106,20 @@ ADD notebooks/ /opt/shared_nbs/examples/
 RUN find . -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
 RUN find . -name '*.ipynb' -exec ipython trust {} \;
 
+ADD add_or_remove_user.sh /tmp/add_or_remove_user.sh
 ADD users /tmp/users
-ADD add_user.sh /tmp/add_user.sh
-RUN bash /tmp/add_user.sh /tmp/users
-RUN rm /tmp/add_user.sh /tmp/users
+RUN bash /tmp/add_or_remove_user.sh /tmp/users
+# Enable inheritors to replace with their own users instead (experimental):
+ONBUILD ADD users /tmp/users
+ONBUILD RUN bash /tmp/add_or_remove_user.sh /tmp/users
+ONBUILD RUN rm /tmp/add_or_remove_user.sh /tmp/users
+
+# Derivative containers should add jupyterhub config,
+# which will be used when starting the application.
+ONBUILD ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
+
+EXPOSE 8000
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 
 # Mark a subdirectory of shared folder into volume for sharing data outside the container
 VOLUME /opt/shared_nbs/EXTERNAL
